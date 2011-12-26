@@ -1,0 +1,15 @@
+.deps
+.dirstamp
+*.sw[po]
+*.lo
+*.o
+*.la
+*.dat
+*.so
+Makefile
+.libs
+stamp-h1
+autom4te.cache/*
+libtool
+config.log
+config.status
