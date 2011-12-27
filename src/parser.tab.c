@@ -62,13 +62,13 @@
 #define YYLSP_NEEDED 0
 
 /* Substitute the variable and function names.  */
-#define yyparse         mustache_parse
-#define yylex           mustache_lex
-#define yyerror         mustache_error
-#define yylval          mustache_lval
-#define yychar          mustache_char
-#define yydebug         mustache_debug
-#define yynerrs         mustache_nerrs
+#define yyparse         mustache_p_parse
+#define yylex           mustache_p_lex
+#define yyerror         mustache_p_error
+#define yylval          mustache_p_lval
+#define yychar          mustache_p_char
+#define yydebug         mustache_p_debug
+#define yynerrs         mustache_p_nerrs
 
 
 /* Copy the first part of user declarations.  */
@@ -76,37 +76,33 @@
 /* Line 268 of yacc.c  */
 #line 1 "parser.y"
 
-#include <config.h>
-#include <mustache.h>
-#include <parser.tab.h>	
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
 #include <malloc.h>
+#include <config.h>
+#include <mustache.h>
+#include <parser.tab.h>	
 
-void yyerror (template_t **, const char *);
-
+#define YY_END_OF_BUFFER_CHAR 0
 typedef struct yy_buffer_state *YY_BUFFER_STATE;
-extern YY_BUFFER_STATE mustache__scan_string (const char *string);  
-extern int mustache_lex_destroy(void);
-extern int mustache_lex(YYSTYPE *);
-extern int mustache_get_lineno(void);
-extern char *mustache_get_text(void);
-char *mustache_ext_file;
+typedef size_t yy_size_t;
+extern YY_BUFFER_STATE mustache_p__scan_buffer (char *base,yy_size_t size  );
+extern int mustache_p_lex_destroy(void);
+extern int mustache_p_get_lineno(void);
 
-#define emit_error(fmt, ...){                                           \
-	do {                                                            \
-		char _buffer[DEF_BUFFER_SIZE];                          \
-		                                                        \
-		snprintf(_buffer, sizeof(_buffer), fmt, ##__VA_ARGS__); \
-		yyerror(template, _buffer);                                 \
-		YYERROR;                                                \
-	}while(0); }
+typedef struct mustache_ctx {
+	mustache_api_t        *api;
+	mustache_template_t   *template;
+	void                  *userdata;
+} mustache_ctx;
+
+void yyerror (mustache_ctx *, const char *);
 
 
 
 /* Line 268 of yacc.c  */
-#line 110 "parser.tab.c"
+#line 106 "parser.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -146,15 +142,15 @@ typedef union YYSTYPE
 {
 
 /* Line 293 of yacc.c  */
-#line 36 "parser.y"
+#line 32 "parser.y"
 
 	char                  *text;
-	template_t            *template;
+	mustache_template_t      *template;
 
 
 
 /* Line 293 of yacc.c  */
-#line 158 "parser.tab.c"
+#line 154 "parser.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -166,7 +162,7 @@ typedef union YYSTYPE
 
 
 /* Line 343 of yacc.c  */
-#line 170 "parser.tab.c"
+#line 166 "parser.tab.c"
 
 #ifdef short
 # undef short
@@ -383,18 +379,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  9
+#define YYFINAL  10
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   14
+#define YYLAST   42
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  7
+#define YYNTOKENS  9
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  5
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  10
+#define YYNRULES  11
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  15
+#define YYNSTATES  28
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -410,12 +406,12 @@ static const yytype_uint8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     6,     2,     2,     2,     2,
+       2,     2,     2,     2,     2,     2,     2,     7,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-       2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
+       2,     2,     2,     2,     8,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -440,23 +436,25 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     6,     8,    11,    13,    17,    22,
-      24
+       0,     0,     3,     5,     6,     8,    11,    13,    17,    27,
+      37,    39
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
 static const yytype_int8 yyrhs[] =
 {
-       8,     0,    -1,     9,    -1,    -1,    10,    -1,     9,    10,
-      -1,    11,    -1,     4,    11,     5,    -1,     4,     6,    11,
-       5,    -1,     3,    -1,    11,     3,    -1
+      10,     0,    -1,    11,    -1,    -1,    12,    -1,    11,    12,
+      -1,    13,    -1,     4,    13,     5,    -1,     4,     6,    13,
+       5,    11,     4,     7,    13,     5,    -1,     4,     8,    13,
+       5,    11,     4,     7,    13,     5,    -1,     3,    -1,    13,
+       3,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    47,    47,    50,    53,    56,    68,    74,    80,    89,
-      92
+       0,    43,    43,    46,    49,    52,    64,    70,    76,    84,
+      95,    98
 };
 #endif
 
@@ -466,7 +464,8 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "TEXT", "MUSTAG_START", "MUSTAG_END",
-  "'#'", "$accept", "start", "tpl_tokens", "tpl_token", "text", 0
+  "'#'", "'/'", "'^'", "$accept", "start", "tpl_tokens", "tpl_token",
+  "text", 0
 };
 #endif
 
@@ -475,22 +474,22 @@ static const char *const yytname[] =
    token YYLEX-NUM.  */
 static const yytype_uint16 yytoknum[] =
 {
-       0,   256,   257,   258,   259,   260,    35
+       0,   256,   257,   258,   259,   260,    35,    47,    94
 };
 # endif
 
 /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
 static const yytype_uint8 yyr1[] =
 {
-       0,     7,     8,     9,     9,     9,    10,    10,    10,    11,
-      11
+       0,     9,    10,    11,    11,    11,    12,    12,    12,    12,
+      13,    13
 };
 
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     0,     1,     2,     1,     3,     4,     1,
-       2
+       0,     2,     1,     0,     1,     2,     1,     3,     9,     9,
+       1,     2
 };
 
 /* YYDEFACT[STATE-NAME] -- Default reduction number in state STATE-NUM.
@@ -498,8 +497,9 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       3,     9,     0,     0,     2,     4,     6,     0,     0,     1,
-       5,    10,     0,     7,     8
+       3,    10,     0,     0,     2,     4,     6,     0,     0,     0,
+       1,     5,    11,     0,     0,     7,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     8,     9
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
@@ -510,17 +510,18 @@ static const yytype_int8 yydefgoto[] =
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -3
+#define YYPACT_NINF -4
 static const yytype_int8 yypact[] =
 {
-       7,    -3,     0,     1,     7,    -3,     5,     9,    -1,    -3,
-      -3,    -3,     4,    -3,    -3
+      -1,    -4,    25,    14,    -1,    -4,    26,    39,    39,     7,
+      -4,    -4,    -4,     8,    27,    -4,    -1,    -1,    20,    35,
+       1,    19,    39,    39,    31,    32,    -4,    -4
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -3,    -3,    -3,    10,    -2
+      -4,    -4,    24,    -3,    -2
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -529,28 +530,35 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-       8,     9,    11,     1,    13,    12,     7,    11,    11,    14,
-       1,     2,     1,     0,    10
+       9,    11,     1,     2,     1,    13,    14,     7,    22,     8,
+      12,    12,    15,    16,    10,    11,    11,     0,     9,     9,
+      24,    25,     1,     1,    20,     7,    23,     8,     1,    12,
+      12,     7,    17,     8,    12,    12,    26,    27,     1,    21,
+      18,    19,     1
 };
 
 #define yypact_value_is_default(yystate) \
-  ((yystate) == (-3))
+  ((yystate) == (-4))
 
 #define yytable_value_is_error(yytable_value) \
   YYID (0)
 
 static const yytype_int8 yycheck[] =
 {
-       2,     0,     3,     3,     5,     7,     6,     3,     3,     5,
-       3,     4,     3,    -1,     4
+       2,     4,     3,     4,     3,     7,     8,     6,     7,     8,
+       3,     3,     5,     5,     0,    18,    19,    -1,    20,    21,
+      22,    23,     3,     3,     4,     6,     7,     8,     3,     3,
+       3,     6,     5,     8,     3,     3,     5,     5,     3,     4,
+      16,    17,     3
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     3,     4,     8,     9,    10,    11,     6,    11,     0,
-      10,     3,    11,     5,     5
+       0,     3,     4,    10,    11,    12,    13,     6,     8,    13,
+       0,    12,     3,    13,    13,     5,     5,     5,    11,    11,
+       4,     4,     7,     7,    13,    13,     5,     5
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -591,7 +599,7 @@ do								\
     }								\
   else								\
     {								\
-      yyerror (template, YY_("syntax error: cannot back up")); \
+      yyerror (ctx, YY_("syntax error: cannot back up")); \
       YYERROR;							\
     }								\
 while (YYID (0))
@@ -662,7 +670,7 @@ do {									  \
     {									  \
       YYFPRINTF (stderr, "%s ", Title);					  \
       yy_symbol_print (stderr,						  \
-		  Type, Value, template); \
+		  Type, Value, ctx); \
       YYFPRINTF (stderr, "\n");						  \
     }									  \
 } while (YYID (0))
@@ -676,19 +684,19 @@ do {									  \
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, template_t **template)
+yy_symbol_value_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, mustache_ctx *ctx)
 #else
 static void
-yy_symbol_value_print (yyoutput, yytype, yyvaluep, template)
+yy_symbol_value_print (yyoutput, yytype, yyvaluep, ctx)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
-    template_t **template;
+    mustache_ctx *ctx;
 #endif
 {
   if (!yyvaluep)
     return;
-  YYUSE (template);
+  YYUSE (ctx);
 # ifdef YYPRINT
   if (yytype < YYNTOKENS)
     YYPRINT (yyoutput, yytoknum[yytype], *yyvaluep);
@@ -710,14 +718,14 @@ yy_symbol_value_print (yyoutput, yytype, yyvaluep, template)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, template_t **template)
+yy_symbol_print (FILE *yyoutput, int yytype, YYSTYPE const * const yyvaluep, mustache_ctx *ctx)
 #else
 static void
-yy_symbol_print (yyoutput, yytype, yyvaluep, template)
+yy_symbol_print (yyoutput, yytype, yyvaluep, ctx)
     FILE *yyoutput;
     int yytype;
     YYSTYPE const * const yyvaluep;
-    template_t **template;
+    mustache_ctx *ctx;
 #endif
 {
   if (yytype < YYNTOKENS)
@@ -725,7 +733,7 @@ yy_symbol_print (yyoutput, yytype, yyvaluep, template)
   else
     YYFPRINTF (yyoutput, "nterm %s (", yytname[yytype]);
 
-  yy_symbol_value_print (yyoutput, yytype, yyvaluep, template);
+  yy_symbol_value_print (yyoutput, yytype, yyvaluep, ctx);
   YYFPRINTF (yyoutput, ")");
 }
 
@@ -768,13 +776,13 @@ do {								\
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yy_reduce_print (YYSTYPE *yyvsp, int yyrule, template_t **template)
+yy_reduce_print (YYSTYPE *yyvsp, int yyrule, mustache_ctx *ctx)
 #else
 static void
-yy_reduce_print (yyvsp, yyrule, template)
+yy_reduce_print (yyvsp, yyrule, ctx)
     YYSTYPE *yyvsp;
     int yyrule;
-    template_t **template;
+    mustache_ctx *ctx;
 #endif
 {
   int yynrhs = yyr2[yyrule];
@@ -788,7 +796,7 @@ yy_reduce_print (yyvsp, yyrule, template)
       YYFPRINTF (stderr, "   $%d = ", yyi + 1);
       yy_symbol_print (stderr, yyrhs[yyprhs[yyrule] + yyi],
 		       &(yyvsp[(yyi + 1) - (yynrhs)])
-		       		       , template);
+		       		       , ctx);
       YYFPRINTF (stderr, "\n");
     }
 }
@@ -796,7 +804,7 @@ yy_reduce_print (yyvsp, yyrule, template)
 # define YY_REDUCE_PRINT(Rule)		\
 do {					\
   if (yydebug)				\
-    yy_reduce_print (yyvsp, Rule, template); \
+    yy_reduce_print (yyvsp, Rule, ctx); \
 } while (YYID (0))
 
 /* Nonzero means print parse trace.  It is left uninitialized so that
@@ -1073,18 +1081,18 @@ yysyntax_error (YYSIZE_T *yymsg_alloc, char **yymsg,
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 static void
-yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, template_t **template)
+yydestruct (const char *yymsg, int yytype, YYSTYPE *yyvaluep, mustache_ctx *ctx)
 #else
 static void
-yydestruct (yymsg, yytype, yyvaluep, template)
+yydestruct (yymsg, yytype, yyvaluep, ctx)
     const char *yymsg;
     int yytype;
     YYSTYPE *yyvaluep;
-    template_t **template;
+    mustache_ctx *ctx;
 #endif
 {
   YYUSE (yyvaluep);
-  YYUSE (template);
+  YYUSE (ctx);
 
   if (!yymsg)
     yymsg = "Deleting";
@@ -1108,7 +1116,7 @@ int yyparse ();
 #endif
 #else /* ! YYPARSE_PARAM */
 #if defined __STDC__ || defined __cplusplus
-int yyparse (template_t **template);
+int yyparse (mustache_ctx *ctx);
 #else
 int yyparse ();
 #endif
@@ -1133,11 +1141,11 @@ yyparse (YYPARSE_PARAM)
 #if (defined __STDC__ || defined __C99__FUNC__ \
      || defined __cplusplus || defined _MSC_VER)
 int
-yyparse (template_t **template)
+yyparse (mustache_ctx *ctx)
 #else
 int
-yyparse (template)
-    template_t **template;
+yyparse (ctx)
+    mustache_ctx *ctx;
 #endif
 #endif
 {
@@ -1392,14 +1400,14 @@ yyreduce:
         case 2:
 
 /* Line 1806 of yacc.c  */
-#line 47 "parser.y"
-    { *template = (yyvsp[(1) - (1)].template); }
+#line 43 "parser.y"
+    { ctx->template = (yyvsp[(1) - (1)].template); }
     break;
 
   case 3:
 
 /* Line 1806 of yacc.c  */
-#line 50 "parser.y"
+#line 46 "parser.y"
     {
 		(yyval.template) = NULL;
 	}
@@ -1408,7 +1416,7 @@ yyreduce:
   case 4:
 
 /* Line 1806 of yacc.c  */
-#line 53 "parser.y"
+#line 49 "parser.y"
     {
 		(yyval.template) = (yyvsp[(1) - (1)].template);
 	}
@@ -1417,9 +1425,9 @@ yyreduce:
   case 5:
 
 /* Line 1806 of yacc.c  */
-#line 56 "parser.y"
+#line 52 "parser.y"
     {
-		template_t *p = (yyvsp[(1) - (2)].template);
+		mustache_template_t *p = (yyvsp[(1) - (2)].template);
 		
 		while(p->next != NULL)
 			p = p->next;
@@ -1432,52 +1440,68 @@ yyreduce:
   case 6:
 
 /* Line 1806 of yacc.c  */
-#line 68 "parser.y"
+#line 64 "parser.y"
     {                                   // simple text
-		(yyval.template) = malloc(sizeof(template_t));
-		(yyval.template)->type = TOKEN_TEXT;
-		(yyval.template)->text = (yyvsp[(1) - (1)].text);
-		(yyval.template)->next = NULL;
+		(yyval.template) = malloc(sizeof(mustache_token_t));
+		(yyval.template)->type              = TOKEN_TEXT;
+		(yyval.template)->token_simple.text = (yyvsp[(1) - (1)].text);
+		(yyval.template)->next              = NULL;
 	}
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 74 "parser.y"
+#line 70 "parser.y"
     {         // mustache tag
-		(yyval.template) = malloc(sizeof(template_t));
-		(yyval.template)->type = TOKEN_VARIABLE;
-		(yyval.template)->text = (yyvsp[(2) - (3)].text);
-		(yyval.template)->next = NULL;
+		(yyval.template) = malloc(sizeof(mustache_token_t));
+		(yyval.template)->type              = TOKEN_VARIABLE;
+		(yyval.template)->token_simple.text = (yyvsp[(2) - (3)].text);
+		(yyval.template)->next              = NULL;
 	}
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 80 "parser.y"
-    {     // mustache section start
-		(yyval.template) = malloc(sizeof(template_t));
-		(yyval.template)->type = TOKEN_SECTION_START;
-		(yyval.template)->text = (yyvsp[(3) - (4)].text);
-		(yyval.template)->next = NULL;
+#line 76 "parser.y"
+    { // mustache section
+		(yyval.template) = malloc(sizeof(mustache_token_t));
+		(yyval.template)->type                   = TOKEN_SECTION;
+		(yyval.template)->token_section.name     = (yyvsp[(3) - (9)].text);
+		(yyval.template)->token_section.section  = (yyvsp[(5) - (9)].template);
+		(yyval.template)->token_section.inverted = 0;
+		(yyval.template)->next                   = NULL;
 	}
     break;
 
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 89 "parser.y"
-    {
-		(yyval.text) = (yyvsp[(1) - (1)].text);
+#line 84 "parser.y"
+    { // mustache inverted section 
+		(yyval.template) = malloc(sizeof(mustache_token_t));
+		(yyval.template)->type                   = TOKEN_SECTION;
+		(yyval.template)->token_section.name     = (yyvsp[(3) - (9)].text);
+		(yyval.template)->token_section.section  = (yyvsp[(5) - (9)].template);
+		(yyval.template)->token_section.inverted = 1;
+		(yyval.template)->next                   = NULL;
 	}
     break;
 
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 92 "parser.y"
+#line 95 "parser.y"
+    {
+		(yyval.text) = (yyvsp[(1) - (1)].text);
+	}
+    break;
+
+  case 11:
+
+/* Line 1806 of yacc.c  */
+#line 98 "parser.y"
     {    // eat up text duplicates
 		uintmax_t len1, len2;
 		
@@ -1494,7 +1518,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 1498 "parser.tab.c"
+#line 1522 "parser.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1544,7 +1568,7 @@ yyerrlab:
     {
       ++yynerrs;
 #if ! YYERROR_VERBOSE
-      yyerror (template, YY_("syntax error"));
+      yyerror (ctx, YY_("syntax error"));
 #else
 # define YYSYNTAX_ERROR yysyntax_error (&yymsg_alloc, &yymsg, \
                                         yyssp, yytoken)
@@ -1571,7 +1595,7 @@ yyerrlab:
                 yymsgp = yymsg;
               }
           }
-        yyerror (template, yymsgp);
+        yyerror (ctx, yymsgp);
         if (yysyntax_error_status == 2)
           goto yyexhaustedlab;
       }
@@ -1595,7 +1619,7 @@ yyerrlab:
       else
 	{
 	  yydestruct ("Error: discarding",
-		      yytoken, &yylval, template);
+		      yytoken, &yylval, ctx);
 	  yychar = YYEMPTY;
 	}
     }
@@ -1651,7 +1675,7 @@ yyerrlab1:
 
 
       yydestruct ("Error: popping",
-		  yystos[yystate], yyvsp, template);
+		  yystos[yystate], yyvsp, ctx);
       YYPOPSTACK (1);
       yystate = *yyssp;
       YY_STACK_PRINT (yyss, yyssp);
@@ -1686,7 +1710,7 @@ yyabortlab:
 | yyexhaustedlab -- memory exhaustion comes here.  |
 `-------------------------------------------------*/
 yyexhaustedlab:
-  yyerror (template, YY_("memory exhausted"));
+  yyerror (ctx, YY_("memory exhausted"));
   yyresult = 2;
   /* Fall through.  */
 #endif
@@ -1698,7 +1722,7 @@ yyreturn:
          user semantic actions for why this is necessary.  */
       yytoken = YYTRANSLATE (yychar);
       yydestruct ("Cleanup: discarding lookahead",
-                  yytoken, &yylval, template);
+                  yytoken, &yylval, ctx);
     }
   /* Do not reclaim the symbols of the rule which action triggered
      this YYABORT or YYACCEPT.  */
@@ -1707,7 +1731,7 @@ yyreturn:
   while (yyssp != yyss)
     {
       yydestruct ("Cleanup: popping",
-		  yystos[*yyssp], yyvsp, template);
+		  yystos[*yyssp], yyvsp, ctx);
       YYPOPSTACK (1);
     }
 #ifndef yyoverflow
@@ -1725,84 +1749,99 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 104 "parser.y"
+#line 110 "parser.y"
 
 
-void yyerror(template_t **template, const char *msg){ // {{{
-	char                  *file              = mustache_ext_file; 
-	
-	if(!file)
-		file = "-";
-	
-	fprintf(stderr, "%s: error: %d: %s near '%s'\n", file, mustache_get_lineno(), msg, mustache_get_text());
-	(void)template;
+void yyerror(mustache_ctx *ctx, const char *msg){ // {{{
+	ctx->api->error(ctx->api, ctx->userdata, mustache_p_get_lineno(), (char *)msg);
 } // }}}
 
-template_t *   mustache_string_parse(char *string){ // {{{
-	template_t *new_template = NULL;
+uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size){ // {{{
+	char                  *string;
+	uintmax_t              string_len;
+	mustache_strread_ctx  *ctx               = (mustache_strread_ctx *)userdata; 
 	
-	mustache__scan_string(string);
+	string     = ctx->string + ctx->offset;
+	string_len = strlen(string);
+	string_len = (string_len < buffer_size) ? string_len : buffer_size;
 	
-	yyparse(&new_template);
+	memcpy(buffer, string, string_len);
 	
-	mustache_lex_destroy();
-	return new_template;
+	ctx->offset += string_len;
+	return string_len;
 } // }}}
 
-#ifdef FILE_PARSING
-template_t *   mustache_file_parse(char *filename){ // {{{
-	template_t            *new_template      = NULL;
-	FILE                  *fd;
+mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // {{{
+	mustache_ctx           ctx               = { api, NULL, userdata };
 	char                  *content           = NULL;
 	uintmax_t              content_off       = 0;
 	uintmax_t              content_size      = 0;
-
-	if( (fd = fopen(filename, "rb")) == NULL)
-		return NULL;
-		
-	while(!feof(fd)){
+	uintmax_t              ret;
+	
+	while(1){
 		content_size += 1024;
-		content       = realloc(content, content_size + 1); // 1 for terminating \0
+		content       = realloc(content, content_size + 2); // 2 for terminating EOF of yy
 		if(!content)
+			break;;
+		
+		if( (ret = api->read(api, userdata, content + content_off, content_size - content_off)) == 0)
 			break;
 		
-		content_off  += fread(content + content_off, 1, content_size - content_off, fd);
+		content_off += ret;
 	}
-	fclose(fd);
 	
 	if(content){
-		mustache_ext_file = strdup(filename);
+		content[content_off] = content[content_off+1] = YY_END_OF_BUFFER_CHAR;
 		
-		content[content_off] = '\0';
+		mustache_p__scan_buffer(content, content_off + 2);
 		
-		new_template = mustache_string_parse(content);
+		yyparse(&ctx);
+		
+		mustache_p_lex_destroy();
 		free(content);
-		
-		if(mustache_ext_file){
-			free(mustache_ext_file);
-			mustache_ext_file = NULL;
-		}
 	}
-	return new_template;
+	return ctx.template;
 } // }}}
-#endif
+void                  mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+	
+} // }}}
+void                  mustache_free   (mustache_template_t *template){ // {{{
+	mustache_template_t            *p, *n;
+	
+	p = template;
+	do{
+		switch(p->type){
+			case TOKEN_TEXT:
+			case TOKEN_VARIABLE:
+				if(p->token_simple.text)
+					free(p->token_simple.text);
+				break;
+			case TOKEN_SECTION:
+				mustache_free(p->token_section.section);
+				if(p->token_section.name)
+					free(p->token_section.name);
+				break;
+		};
+		n = p->next;
+		free(p);
+	}while( (p = n) != NULL);
+} // }}}
 
 #ifdef DEBUG
-
 char * token_descr[] = {
 	[TOKEN_TEXT]     = "text",
 	[TOKEN_VARIABLE] = "variable",
-	[TOKEN_SECTION_START] = "section",
+	[TOKEN_SECTION]  = "section",
 };
 
-void mustache_dump(template_t *template){ // {{{
-	template_t            *p;
+void mustache_dump(mustache_template_t *template){ // {{{
+	mustache_template_t            *p;
 	
 	p = template;
 	do{
 		fprintf(stderr, "token: ->type '%s'; ->text: '%s'; ->next = %p\n",
 			token_descr[p->type],
-			p->text,
+			p->token_simple.text,
 			p->next
 		);
 	}while( (p = p->next) != NULL);

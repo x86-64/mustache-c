@@ -1,25 +1,68 @@
-#ifndef MUSTASHE_H
-#define MUSTASHE_H
+#ifndef MUSTACHE_H
+#define MUSTACHE_H
 
-typedef enum   token_type_t  token_type_t;
-typedef struct template_t    template_t;
+typedef struct mustache_api_t             mustache_api_t;
+typedef struct mustache_token_t           mustache_token_t;
+typedef struct mustache_token_t           mustache_template_t;
+typedef enum   mustache_token_type_t      mustache_token_type_t;
+typedef struct mustache_token_variable_t  mustache_token_variable_t;
+typedef struct mustache_token_section_t   mustache_token_section_t;
 
-enum token_type_t {
+typedef uintmax_t (*mustache_api_read)   (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
+typedef uintmax_t (*mustache_api_write)  (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
+typedef uintmax_t (*mustache_api_varget) (mustache_api_t *api, void *userdata, mustache_token_variable_t *token); 
+typedef uintmax_t (*mustache_api_sectget)(mustache_api_t *api, void *userdata, mustache_token_section_t  *token); 
+typedef void      (*mustache_api_error)  (mustache_api_t *api, void *userdata, uintmax_t lineno, char *error); 
+
+enum mustache_token_type_t {
 	TOKEN_TEXT,
 	TOKEN_VARIABLE,
-	TOKEN_SECTION_START,
-
+	TOKEN_SECTION
 };
 
-struct template_t {
-	token_type_t           type;
-	
+struct mustache_token_variable_t {
 	char                  *text;
-	
-	template_t            *next;
 };
-template_t *   mustache_string_parse(char *string);
-template_t *   mustache_file_parse(char *filename);
-void           mustache_dump(template_t *template);
+
+struct mustache_token_section_t {
+	char                  *name;
+	mustache_token_t      *section;
+	uintmax_t              inverted;
+};
+
+struct mustache_token_t {
+	mustache_token_type_t  type;
+	
+	union {
+		mustache_token_variable_t     token_simple;
+		mustache_token_section_t      token_section;
+	};
+	
+	mustache_token_t      *next;
+};
+
+struct mustache_api_t {
+	mustache_api_read     read;
+	mustache_api_write    write;
+	mustache_api_varget   varget;
+	mustache_api_sectget  sectget;
+	mustache_api_error    error;
+};
+
+// helpers
+typedef struct mustache_strread_ctx {
+	char                  *string;
+	uintmax_t              offset;
+} mustache_strread_ctx;
+
+uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
+
+// api
+mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata);
+void                  mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template);
+void                  mustache_free   (mustache_template_t *template);
+
+// debug api
+void                  mustache_dump   (mustache_template_t *template);
 
 #endif

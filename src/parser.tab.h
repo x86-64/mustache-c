@@ -50,10 +50,10 @@ typedef union YYSTYPE
 {
 
 /* Line 2068 of yacc.c  */
-#line 36 "parser.y"
+#line 32 "parser.y"
 
 	char                  *text;
-	template_t            *template;
+	mustache_template_t      *template;
 
 
 

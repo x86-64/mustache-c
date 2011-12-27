@@ -1,4 +1,5 @@
 %{
+#include <stdint.h>
 #include "config.h"
 #include "mustache.h"
 #include "parser.tab.h"
@@ -13,8 +14,8 @@
 %x comment
 %x mustag
 
-name        [a-z0-9][a-z0-9_]*
-special     [!^#/]
+name        [a-z0-9][a-z0-9_:]*
+special     [#^/]
 
 %%
 
