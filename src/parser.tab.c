@@ -78,8 +78,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
-#include <malloc.h>
 #include <config.h>
 #include <mustache.h>
 #include <parser.tab.h>	
