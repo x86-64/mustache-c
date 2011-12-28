@@ -31,7 +31,7 @@ void yyerror (mustache_ctx *, const char *);
 
 %union {
 	char                  *text;
-	mustache_template_t      *template;
+	mustache_token_t      *template;
 }
 %token TEXT MUSTAG_START MUSTAG_END
 %type  <text>                  TEXT MUSTAG_START MUSTAG_END text
@@ -50,7 +50,7 @@ tpl_tokens :
 		$$ = $1;
 	}
 	| tpl_tokens tpl_token {
-		mustache_template_t *p = $1;
+		mustache_token_t *p = $1;
 		
 		while(p->next != NULL)
 			p = p->next;
@@ -63,15 +63,17 @@ tpl_tokens :
 tpl_token :
 	text {                                   // simple text
 		$$ = malloc(sizeof(mustache_token_t));
-		$$->type              = TOKEN_TEXT;
-		$$->token_simple.text = $1;
-		$$->next              = NULL;
+		$$->type                     = TOKEN_TEXT;
+		$$->token_simple.text        = $1;
+		$$->token_simple.text_length = strlen($1);
+		$$->next                     = NULL;
 	}
 	| MUSTAG_START text MUSTAG_END {         // mustache tag
 		$$ = malloc(sizeof(mustache_token_t));
-		$$->type              = TOKEN_VARIABLE;
-		$$->token_simple.text = $2;
-		$$->next              = NULL;
+		$$->type                     = TOKEN_VARIABLE;
+		$$->token_simple.text        = $2;
+		$$->token_simple.text_length = strlen($2);
+		$$->next                     = NULL;
 	}
 	| MUSTAG_START '#' text MUSTAG_END tpl_tokens MUSTAG_START '/' text MUSTAG_END { // mustache section
 		$$ = malloc(sizeof(mustache_token_t));
@@ -113,10 +115,11 @@ void yyerror(mustache_ctx *ctx, const char *msg){ // {{{
 	ctx->api->error(ctx->api, ctx->userdata, mustache_p_get_lineno(), (char *)msg);
 } // }}}
 
+#ifdef HELPERS
 uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size){ // {{{
 	char                  *string;
 	uintmax_t              string_len;
-	mustache_strread_ctx  *ctx               = (mustache_strread_ctx *)userdata; 
+	mustache_str_ctx      *ctx               = (mustache_str_ctx *)userdata; 
 	
 	string     = ctx->string + ctx->offset;
 	string_len = strlen(string);
@@ -127,6 +130,18 @@ uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, 
 	ctx->offset += string_len;
 	return string_len;
 } // }}}
+uintmax_t             mustache_std_strwrite(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size){ // {{{
+	mustache_str_ctx      *ctx               = (mustache_str_ctx *)userdata; 
+	
+	ctx->string = realloc(ctx->string, ctx->offset + buffer_size + 1);
+	
+	memcpy(ctx->string + ctx->offset, buffer, buffer_size);
+	ctx->string[ctx->offset + buffer_size] = '\0';
+	
+	ctx->offset += buffer_size;
+	return buffer_size;
+} // }}}
+#endif
 
 mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // {{{
 	mustache_ctx           ctx               = { api, NULL, userdata };
@@ -159,14 +174,31 @@ mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // 
 	}
 	return ctx.template;
 } // }}}
-void                  mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+uintmax_t             mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+	mustache_template_t            *p;
 	
+	for(p = template; p; p = p->next){
+		switch(p->type){
+			case TOKEN_TEXT:
+				if(api->write(api, userdata, p->token_simple.text, p->token_simple.text_length) == 0)
+					return 0;
+				break;
+			case TOKEN_VARIABLE:
+				if(api->varget(api, userdata, &p->token_simple) == 0)
+					return 0;
+				break;
+			case TOKEN_SECTION:
+				if(api->sectget(api, userdata, &p->token_section) == 0)
+					return 0;
+				break;
+		};
+	}
+	return 1;
 } // }}}
 void                  mustache_free   (mustache_template_t *template){ // {{{
 	mustache_template_t            *p, *n;
 	
-	p = template;
-	do{
+	for(p = template; p; p = n){
 		switch(p->type){
 			case TOKEN_TEXT:
 			case TOKEN_VARIABLE:
@@ -181,7 +213,7 @@ void                  mustache_free   (mustache_template_t *template){ // {{{
 		};
 		n = p->next;
 		free(p);
-	}while( (p = n) != NULL);
+	}
 } // }}}
 
 #ifdef DEBUG

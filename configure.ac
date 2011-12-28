@@ -20,9 +20,9 @@ if test "x$enable_debug" == "xyes"; then
         AC_DEFINE([DEBUG], [1], [Defined if debug functions requested])
 fi
 
-AC_ARG_ENABLE(fileparse,   AS_HELP_STRING([--disable-fileparse],  [remove file parsing routines]))
-if test "x$enable_fileparse" != "xyes"; then
-        AC_DEFINE([FILE_PARSING], [1], [Define if file parsing routines enabled])
+AC_ARG_ENABLE(helpers, AS_HELP_STRING([--disable-helpers],  [do not include helper functions ]))
+if test "x$enable_helpers" != "xyes"; then
+        AC_DEFINE([HELPERS], [1], [Define if helpers routines enabled])
 fi
 
 AC_CONFIG_FILES([Makefile

@@ -22,6 +22,7 @@ enum mustache_token_type_t {
 
 struct mustache_token_variable_t {
 	char                  *text;
+	uintmax_t              text_length;
 };
 
 struct mustache_token_section_t {
@@ -49,20 +50,21 @@ struct mustache_api_t {
 	mustache_api_error    error;
 };
 
-// helpers
-typedef struct mustache_strread_ctx {
-	char                  *string;
-	uintmax_t              offset;
-} mustache_strread_ctx;
-
-uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
-
 // api
 mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata);
-void                  mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template);
+uintmax_t             mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template);
 void                  mustache_free   (mustache_template_t *template);
 
-// debug api
+// helpers (build with --enable-helpers, default)
+typedef struct mustache_str_ctx {
+	char                  *string;
+	uintmax_t              offset;
+} mustache_str_ctx;
+
+uintmax_t             mustache_std_strread  (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
+uintmax_t             mustache_std_strwrite (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
+
+// debug api (build with --enable-debug, not default)
 void                  mustache_dump   (mustache_template_t *template);
 
 #endif

@@ -53,7 +53,7 @@ typedef union YYSTYPE
 #line 32 "parser.y"
 
 	char                  *text;
-	mustache_template_t      *template;
+	mustache_token_t      *template;
 
 
 

@@ -145,7 +145,7 @@ typedef union YYSTYPE
 #line 32 "parser.y"
 
 	char                  *text;
-	mustache_template_t      *template;
+	mustache_token_t      *template;
 
 
 
@@ -453,8 +453,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    43,    43,    46,    49,    52,    64,    70,    76,    84,
-      95,    98
+       0,    43,    43,    46,    49,    52,    64,    71,    78,    86,
+      97,   100
 };
 #endif
 
@@ -1427,7 +1427,7 @@ yyreduce:
 /* Line 1806 of yacc.c  */
 #line 52 "parser.y"
     {
-		mustache_template_t *p = (yyvsp[(1) - (2)].template);
+		mustache_token_t *p = (yyvsp[(1) - (2)].template);
 		
 		while(p->next != NULL)
 			p = p->next;
@@ -1443,28 +1443,30 @@ yyreduce:
 #line 64 "parser.y"
     {                                   // simple text
 		(yyval.template) = malloc(sizeof(mustache_token_t));
-		(yyval.template)->type              = TOKEN_TEXT;
-		(yyval.template)->token_simple.text = (yyvsp[(1) - (1)].text);
-		(yyval.template)->next              = NULL;
+		(yyval.template)->type                     = TOKEN_TEXT;
+		(yyval.template)->token_simple.text        = (yyvsp[(1) - (1)].text);
+		(yyval.template)->token_simple.text_length = strlen((yyvsp[(1) - (1)].text));
+		(yyval.template)->next                     = NULL;
 	}
     break;
 
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 70 "parser.y"
+#line 71 "parser.y"
     {         // mustache tag
 		(yyval.template) = malloc(sizeof(mustache_token_t));
-		(yyval.template)->type              = TOKEN_VARIABLE;
-		(yyval.template)->token_simple.text = (yyvsp[(2) - (3)].text);
-		(yyval.template)->next              = NULL;
+		(yyval.template)->type                     = TOKEN_VARIABLE;
+		(yyval.template)->token_simple.text        = (yyvsp[(2) - (3)].text);
+		(yyval.template)->token_simple.text_length = strlen((yyvsp[(2) - (3)].text));
+		(yyval.template)->next                     = NULL;
 	}
     break;
 
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 76 "parser.y"
+#line 78 "parser.y"
     { // mustache section
 		(yyval.template) = malloc(sizeof(mustache_token_t));
 		(yyval.template)->type                   = TOKEN_SECTION;
@@ -1478,7 +1480,7 @@ yyreduce:
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 84 "parser.y"
+#line 86 "parser.y"
     { // mustache inverted section 
 		(yyval.template) = malloc(sizeof(mustache_token_t));
 		(yyval.template)->type                   = TOKEN_SECTION;
@@ -1492,7 +1494,7 @@ yyreduce:
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 95 "parser.y"
+#line 97 "parser.y"
     {
 		(yyval.text) = (yyvsp[(1) - (1)].text);
 	}
@@ -1501,7 +1503,7 @@ yyreduce:
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 98 "parser.y"
+#line 100 "parser.y"
     {    // eat up text duplicates
 		uintmax_t len1, len2;
 		
@@ -1518,7 +1520,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 1522 "parser.tab.c"
+#line 1524 "parser.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1749,17 +1751,18 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 110 "parser.y"
+#line 112 "parser.y"
 
 
 void yyerror(mustache_ctx *ctx, const char *msg){ // {{{
 	ctx->api->error(ctx->api, ctx->userdata, mustache_p_get_lineno(), (char *)msg);
 } // }}}
 
+#ifdef HELPERS
 uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size){ // {{{
 	char                  *string;
 	uintmax_t              string_len;
-	mustache_strread_ctx  *ctx               = (mustache_strread_ctx *)userdata; 
+	mustache_str_ctx      *ctx               = (mustache_str_ctx *)userdata; 
 	
 	string     = ctx->string + ctx->offset;
 	string_len = strlen(string);
@@ -1770,6 +1773,18 @@ uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, 
 	ctx->offset += string_len;
 	return string_len;
 } // }}}
+uintmax_t             mustache_std_strwrite(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size){ // {{{
+	mustache_str_ctx      *ctx               = (mustache_str_ctx *)userdata; 
+	
+	ctx->string = realloc(ctx->string, ctx->offset + buffer_size + 1);
+	
+	memcpy(ctx->string + ctx->offset, buffer, buffer_size);
+	ctx->string[ctx->offset + buffer_size] = '\0';
+	
+	ctx->offset += buffer_size;
+	return buffer_size;
+} // }}}
+#endif
 
 mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // {{{
 	mustache_ctx           ctx               = { api, NULL, userdata };
@@ -1802,14 +1817,31 @@ mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // 
 	}
 	return ctx.template;
 } // }}}
-void                  mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+uintmax_t             mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+	mustache_template_t            *p;
 	
+	for(p = template; p; p = p->next){
+		switch(p->type){
+			case TOKEN_TEXT:
+				if(api->write(api, userdata, p->token_simple.text, p->token_simple.text_length) == 0)
+					return 0;
+				break;
+			case TOKEN_VARIABLE:
+				if(api->varget(api, userdata, &p->token_simple) == 0)
+					return 0;
+				break;
+			case TOKEN_SECTION:
+				if(api->sectget(api, userdata, &p->token_section) == 0)
+					return 0;
+				break;
+		};
+	}
+	return 1;
 } // }}}
 void                  mustache_free   (mustache_template_t *template){ // {{{
 	mustache_template_t            *p, *n;
 	
-	p = template;
-	do{
+	for(p = template; p; p = n){
 		switch(p->type){
 			case TOKEN_TEXT:
 			case TOKEN_VARIABLE:
@@ -1824,7 +1856,7 @@ void                  mustache_free   (mustache_template_t *template){ // {{{
 		};
 		n = p->next;
 		free(p);
-	}while( (p = n) != NULL);
+	}
 } // }}}
 
 #ifdef DEBUG

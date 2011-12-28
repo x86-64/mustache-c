@@ -736,7 +736,7 @@ with_gnu_ld
 with_sysroot
 enable_libtool_lock
 enable_debug
-enable_fileparse
+enable_helpers
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1375,7 +1375,7 @@ Optional Features:
                           optimize for fast installation [default=yes]
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-debug          compile with debug functions
-  --disable-fileparse     remove file parsing routines
+  --disable-helpers       do not include helper functions
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -11492,14 +11492,14 @@ $as_echo "#define DEBUG 1" >>confdefs.h
 
 fi
 
-# Check whether --enable-fileparse was given.
-if test "${enable_fileparse+set}" = set; then :
-  enableval=$enable_fileparse;
+# Check whether --enable-helpers was given.
+if test "${enable_helpers+set}" = set; then :
+  enableval=$enable_helpers;
 fi
 
-if test "x$enable_fileparse" != "xyes"; then
+if test "x$enable_helpers" != "xyes"; then
 
-$as_echo "#define FILE_PARSING 1" >>confdefs.h
+$as_echo "#define HELPERS 1" >>confdefs.h
 
 fi
 
