@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>mustache-c: mustache_token_t Struct Reference</title>
+<title>mustache-c: mustache_token_section_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css"/>
 </head>
@@ -38,23 +38,21 @@
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">mustache_token_t Struct Reference</div>  </div>
+<div class="title">mustache_token_section_t Struct Reference</div>  </div>
 </div>
 <div class="contents">
-<!-- doxytag: class="mustache_token_t" --><table class="memberdecls">
+<!-- doxytag: class="mustache_token_section_t" --><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aae2a38d1637800639116235a99b104e2"></a><!-- doxytag: member="mustache_token_t::type" ref="aae2a38d1637800639116235a99b104e2" args="" -->
-<a class="el" href="mustache_8h.html#a37c17709b30d7e939a79410404ff572f">mustache_token_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__token__t.html#aae2a38d1637800639116235a99b104e2">type</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Token type. <br/></td></tr>
-<tr><td class="memItemLeft" ><a class="anchor" id="ae3bcb039d92a3a69fadaa5e460b0f8fd"></a><!-- doxytag: member="mustache_token_t::@1" ref="ae3bcb039d92a3a69fadaa5e460b0f8fd" args="" -->
-union {</td></tr>
-<tr><td class="memItemLeft" >&#160;&#160;&#160;<a class="el" href="structmustache__token__variable__t.html">mustache_token_variable_t</a>&#160;&#160;&#160;<b>token_simple</b></td></tr>
-<tr><td class="memItemLeft" >&#160;&#160;&#160;<a class="el" href="structmustache__token__section__t.html">mustache_token_section_t</a>&#160;&#160;&#160;<b>token_section</b></td></tr>
-<tr><td class="memItemLeft" valign="top">};&#160;</td><td class="memItemRight" valign="bottom"></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5315d173d103089aaf7591ce0010e57c"></a><!-- doxytag: member="mustache_token_t::next" ref="a5315d173d103089aaf7591ce0010e57c" args="" -->
-<a class="el" href="structmustache__token__t.html">mustache_token_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__token__t.html#a5315d173d103089aaf7591ce0010e57c">next</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Next token in chain. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5ac083a645d964373f022d03df4849c8"></a><!-- doxytag: member="mustache_token_section_t::name" ref="a5ac083a645d964373f022d03df4849c8" args="" -->
+char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__token__section__t.html#a5ac083a645d964373f022d03df4849c8">name</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Section name. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a1e9e3f1764ac06c939add8015aa2da"></a><!-- doxytag: member="mustache_token_section_t::section" ref="a6a1e9e3f1764ac06c939add8015aa2da" args="" -->
+<a class="el" href="structmustache__token__t.html">mustache_token_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__token__section__t.html#a6a1e9e3f1764ac06c939add8015aa2da">section</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Section template. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a4903e0e49039e8598164f509325cd5c4"></a><!-- doxytag: member="mustache_token_section_t::inverted" ref="a4903e0e49039e8598164f509325cd5c4" args="" -->
+uintmax_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__token__section__t.html#a4903e0e49039e8598164f509325cd5c4">inverted</a></td></tr>
+<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Inverted section or not. <br/></td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li><a class="el" href="mustache_8h_source.html">mustache.h</a></li>
@@ -63,7 +61,7 @@ union {</td></tr>
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Wed Dec 28 2011 18:12:16 for mustache-c by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4</small></address>
+Generated on Thu Dec 29 2011 12:18:50 for mustache-c by&#160;<a href="http://www.doxygen.org/index.html"><img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.7.4</small></address>
 
 <script type="text/javascript">
 
