@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>mustache-c: mustache_str_ctx Struct Reference</title>
+<title>mustache-c: mustache_ctx Struct Reference</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -54,25 +54,27 @@
   <div class="summary">
 <a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">mustache_str_ctx Struct Reference</div>  </div>
+<div class="title">mustache_ctx Struct Reference</div>  </div>
 </div>
 <div class="contents">
-<!-- doxytag: class="mustache_str_ctx" -->
-<p><code>#include &lt;<a class="el" href="mustache_8h_source.html">mustache.h</a>&gt;</code></p>
-<table class="memberdecls">
+<!-- doxytag: class="mustache_ctx" --><table class="memberdecls">
 <tr><td colspan="2"><h2><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aed1cfb225a5fb77461e7972691e68a72"></a><!-- doxytag: member="mustache_str_ctx::string" ref="aed1cfb225a5fb77461e7972691e68a72" args="" -->
-char *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__str__ctx.html#aed1cfb225a5fb77461e7972691e68a72">string</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">String to read or write. <br/></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a359fd1c4d4ebab4fc38c4fcd50744981"></a><!-- doxytag: member="mustache_str_ctx::offset" ref="a359fd1c4d4ebab4fc38c4fcd50744981" args="" -->
-uintmax_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structmustache__str__ctx.html#a359fd1c4d4ebab4fc38c4fcd50744981">offset</a></td></tr>
-<tr><td class="mdescLeft">&#160;</td><td class="mdescRight">Internal data. Current string offset. <br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaaa9eb4b29cca24b33980e358857dfdb"></a><!-- doxytag: member="mustache_ctx::backend" ref="aaaa9eb4b29cca24b33980e358857dfdb" args="" -->
+backend_t *&#160;</td><td class="memItemRight" valign="bottom"><b>backend</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add97c0c26597e458b9761c00d8f11012"></a><!-- doxytag: member="mustache_ctx::request" ref="add97c0c26597e458b9761c00d8f11012" args="" -->
+request_t *&#160;</td><td class="memItemRight" valign="bottom"><b>request</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae844cadb7e3fcb2b454fbf919b1995fb"></a><!-- doxytag: member="mustache_ctx::userdata" ref="ae844cadb7e3fcb2b454fbf919b1995fb" args="" -->
+<a class="el" href="structmustache__userdata.html">mustache_userdata</a> *&#160;</td><td class="memItemRight" valign="bottom"><b>userdata</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a54cbd92bad018ff2e90294f54db58d5a"></a><!-- doxytag: member="mustache_ctx::output" ref="a54cbd92bad018ff2e90294f54db58d5a" args="" -->
+data_t *&#160;</td><td class="memItemRight" valign="bottom"><b>output</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa0f2332246aa5b3fa7b674d56bc09747"></a><!-- doxytag: member="mustache_ctx::error_lineno" ref="aa0f2332246aa5b3fa7b674d56bc09747" args="" -->
+uintmax_t&#160;</td><td class="memItemRight" valign="bottom"><b>error_lineno</b></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab08baf121fa3c38b0c42dc4cb346dc5e"></a><!-- doxytag: member="mustache_ctx::error_msg" ref="ab08baf121fa3c38b0c42dc4cb346dc5e" args="" -->
+char *&#160;</td><td class="memItemRight" valign="bottom"><b>error_msg</b></td></tr>
 </table>
-<hr/><a name="details" id="details"></a><h2>Detailed Description</h2>
-<div class="textblock"><p>Helper context </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="mustache_8h_source.html">mustache.h</a></li>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>main.c</li>
 </ul>
 </div>
 
