@@ -150,8 +150,8 @@ static int mustache_configure(backend_t *backend, config_t *config){ // {{{
 		return error("bad template");
 	
 	mustache_api_t pre_api = {
-		.varget  = &mustache_frozen_prevarget,
-		.sectget = &mustache_frozen_presectget
+		.varget  = (mustache_api_varget)&mustache_frozen_prevarget,
+		.sectget = (mustache_api_sectget)&mustache_frozen_presectget
 	};
 	if( (mustache_prerender(&pre_api, userdata, userdata->template)) == 0)
 		return error("bad precompile");

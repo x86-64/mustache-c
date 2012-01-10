@@ -617,6 +617,8 @@ LTLIBOBJS
 FLEX
 BISON
 modulesdir
+HAVE_FROZEN_FALSE
+HAVE_FROZEN_TRUE
 LIBOBJS
 CPP
 OTOOL64
@@ -11426,14 +11428,17 @@ fi
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_frozen_frozen_init" >&5
 $as_echo "$ac_cv_lib_frozen_frozen_init" >&6; }
 if test "x$ac_cv_lib_frozen_frozen_init" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBFROZEN 1
-_ACEOF
-
-  LIBS="-lfrozen $LIBS"
-
+  FROZEN=1
 else
-  exit
+  FROZEN=0
+fi
+
+ if test "$FROZEN" = 1; then
+  HAVE_FROZEN_TRUE=
+  HAVE_FROZEN_FALSE='#'
+else
+  HAVE_FROZEN_TRUE='#'
+  HAVE_FROZEN_FALSE=
 fi
 
 modulesdir=${libexecdir}/frozen/
@@ -11679,6 +11684,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${HAVE_FROZEN_TRUE}" && test -z "${HAVE_FROZEN_FALSE}"; then
+  as_fn_error $? "conditional \"HAVE_FROZEN\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 

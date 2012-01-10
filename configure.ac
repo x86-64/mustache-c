@@ -12,7 +12,8 @@ AC_PROG_LIBTOOL
 AC_HEADER_STDC
 AC_FUNC_MALLOC
 
-AC_CHECK_LIB(frozen, frozen_init, [], [exit])
+AC_CHECK_LIB(frozen, frozen_init, [FROZEN=1], [FROZEN=0])
+AM_CONDITIONAL([HAVE_FROZEN], [test "$FROZEN" = 1])
 modulesdir=${libexecdir}/frozen/
 AC_SUBST(modulesdir)
 
