@@ -46,6 +46,10 @@ typedef struct mustache_ctx {
 	char                  *error_msg;
 } mustache_ctx;
 
+typedef struct token_userdata {
+	hashkey_t              key;
+} token_userdata;
+
 uintmax_t mustache_frozen_read   (mustache_api_t *api, mustache_userdata *userdata, char *buffer, uintmax_t buffer_size){ // {{{
 	fastcall_read r_read = { { 5, ACTION_READ }, 0, buffer, buffer_size };
 	if( data_query(userdata->tpl_data, &r_read) < 0 )
@@ -62,15 +66,8 @@ uintmax_t mustache_frozen_write  (mustache_api_t *api, mustache_ctx *ctx, char *
 } // }}}
 uintmax_t mustache_frozen_varget (mustache_api_t *api, mustache_ctx *ctx, mustache_token_variable_t *token){ // {{{
 	data_t                *data;
-	hashkey_t              hashkey;
-	data_t                 hashkey_str       = DATA_RAW(token->text, token->text_length);
-	data_t                 hashkey_d         = DATA_PTR_HASHKEYT(&hashkey);
 	
-	fastcall_convert_from r_convert = { { 4, ACTION_CONVERT_FROM }, &hashkey_str, FORMAT(config) };
-	if(data_query(&hashkey_d, &r_convert) < 0)
-		return 0;
-	
-	if( (data = hash_data_find(ctx->request, hashkey)) == NULL)
+	if( (data = hash_data_find(ctx->request, ((token_userdata *)token->userdata)->key)) == NULL)
 		return 0;
 	
 	fastcall_transfer r_transfer = { { 4, ACTION_TRANSFER }, ctx->output };
@@ -86,13 +83,36 @@ void      mustache_frozen_error  (mustache_api_t *api, mustache_ctx *ctx, uintma
 	ctx->error_lineno = lineno;
 	ctx->error_msg    = strdup(error);
 } // }}}
+void      mustache_frozen_freedata (mustache_api_t *api, void *userdata){ // {{{
+	free(userdata);
+} // }}}
+
+uintmax_t mustache_frozen_prevarget (mustache_api_t *api, mustache_ctx *ctx, mustache_token_variable_t *token){ // {{{
+	hashkey_t              hashkey;
+	data_t                 hashkey_str       = DATA_RAW(token->text, token->text_length);
+	data_t                 hashkey_d         = DATA_PTR_HASHKEYT(&hashkey);
+	
+	fastcall_convert_from r_convert = { { 4, ACTION_CONVERT_FROM }, &hashkey_str, FORMAT(config) };
+	if(data_query(&hashkey_d, &r_convert) < 0)
+		return 0;
+	
+	if( (token->userdata = malloc(sizeof(token_userdata))) == NULL)
+		return 0;
+	
+	((token_userdata *)token->userdata)->key = hashkey;
+	return 1;
+} // }}}
+uintmax_t mustache_frozen_presectget(mustache_api_t *api, mustache_ctx *ctx, mustache_token_section_t  *token){ // {{{
+	return 1;
+} // }}}
 
 mustache_api_t mustache_api = {
-	.read    = (mustache_api_read)&mustache_frozen_read,
-	.write   = (mustache_api_write)&mustache_frozen_write,
-	.varget  = (mustache_api_varget)&mustache_frozen_varget,
-	.sectget = (mustache_api_sectget)&mustache_frozen_sectget,
-	.error   = (mustache_api_error)&mustache_frozen_error
+	.read     = (mustache_api_read)&mustache_frozen_read,
+	.write    = (mustache_api_write)&mustache_frozen_write,
+	.varget   = (mustache_api_varget)&mustache_frozen_varget,
+	.sectget  = (mustache_api_sectget)&mustache_frozen_sectget,
+	.error    = (mustache_api_error)&mustache_frozen_error,
+	.freedata = (mustache_api_freedata)&mustache_frozen_freedata
 };
 
 static int mustache_init(backend_t *backend){ // {{{
@@ -108,7 +128,7 @@ static int mustache_destroy(backend_t *backend){ // {{{
 	mustache_userdata     *userdata          = (mustache_userdata *)backend->userdata;
 	
 	if(userdata->template)
-		mustache_free(userdata->template);
+		mustache_free(&mustache_api, userdata->template);
 	
 	free(userdata);
 	return 0;
@@ -128,6 +148,13 @@ static int mustache_configure(backend_t *backend, config_t *config){ // {{{
 	
 	if( (userdata->template = mustache_compile(&mustache_api, userdata)) == NULL)
 		return error("bad template");
+	
+	mustache_api_t pre_api = {
+		.varget  = &mustache_frozen_prevarget,
+		.sectget = &mustache_frozen_presectget
+	};
+	if( (mustache_prerender(&pre_api, userdata, userdata->template)) == 0)
+		return error("bad precompile");
 	
 	return 0;
 } // }}}
