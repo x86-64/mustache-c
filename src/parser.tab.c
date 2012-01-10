@@ -1790,16 +1790,14 @@ mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // 
 	mustache_ctx           ctx               = { api, NULL, userdata };
 	char                  *content           = NULL;
 	uintmax_t              content_off       = 0;
-	uintmax_t              content_size      = 0;
 	uintmax_t              ret;
 	
 	while(1){
-		content_size += 1024;
-		content       = realloc(content, content_size + 2); // 2 for terminating EOF of yy
+		content       = realloc(content, content_off + 1024 + 2); // 2 for terminating EOF of yy
 		if(!content)
 			break;;
 		
-		if( (ret = api->read(api, userdata, content + content_off, content_size - content_off)) == 0)
+		if( (ret = api->read(api, userdata, content + content_off, 1024)) == 0)
 			break;
 		
 		content_off += ret;
