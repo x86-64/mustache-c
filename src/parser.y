@@ -66,6 +66,7 @@ tpl_token :
 		$$->type                     = TOKEN_TEXT;
 		$$->token_simple.text        = $1;
 		$$->token_simple.text_length = strlen($1);
+		$$->token_simple.userdata    = NULL;
 		$$->next                     = NULL;
 	}
 	| MUSTAG_START text MUSTAG_END {         // mustache tag
@@ -73,6 +74,7 @@ tpl_token :
 		$$->type                     = TOKEN_VARIABLE;
 		$$->token_simple.text        = $2;
 		$$->token_simple.text_length = strlen($2);
+		$$->token_simple.userdata    = NULL;
 		$$->next                     = NULL;
 	}
 	| MUSTAG_START '#' text MUSTAG_END tpl_tokens MUSTAG_START '/' text MUSTAG_END { // mustache section
@@ -81,6 +83,7 @@ tpl_token :
 		$$->token_section.name     = $3;
 		$$->token_section.section  = $5;
 		$$->token_section.inverted = 0;
+		$$->token_section.userdata = NULL;
 		$$->next                   = NULL;
 	}
 	| MUSTAG_START '^' text MUSTAG_END tpl_tokens MUSTAG_START '/' text MUSTAG_END { // mustache inverted section 
@@ -89,6 +92,7 @@ tpl_token :
 		$$->token_section.name     = $3;
 		$$->token_section.section  = $5;
 		$$->token_section.inverted = 1;
+		$$->token_section.userdata = NULL;
 		$$->next                   = NULL;
 	}
 	;
@@ -172,6 +176,25 @@ mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // 
 	}
 	return ctx.template;
 } // }}}
+uintmax_t             mustache_prerender (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+	mustache_template_t            *p;
+	
+	for(p = template; p; p = p->next){
+		switch(p->type){
+			case TOKEN_TEXT:
+				break;
+			case TOKEN_VARIABLE:
+				if(api->varget(api, userdata, &p->token_simple) == 0)
+					return 0;
+				break;
+			case TOKEN_SECTION:
+				if(api->sectget(api, userdata, &p->token_section) == 0)
+					return 0;
+				break;
+		};
+	}
+	return 1;
+} // }}}
 uintmax_t             mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
 	mustache_template_t            *p;
 	
@@ -193,18 +216,24 @@ uintmax_t             mustache_render (mustache_api_t *api, void *userdata, must
 	}
 	return 1;
 } // }}}
-void                  mustache_free   (mustache_template_t *template){ // {{{
+void                  mustache_free   (mustache_api_t *api, mustache_template_t *template){ // {{{
 	mustache_template_t            *p, *n;
 	
 	for(p = template; p; p = n){
 		switch(p->type){
 			case TOKEN_TEXT:
 			case TOKEN_VARIABLE:
+				if(p->token_simple.userdata && api->freedata)
+					api->freedata(api, p->token_simple.userdata);
+				
 				if(p->token_simple.text)
 					free(p->token_simple.text);
 				break;
 			case TOKEN_SECTION:
-				mustache_free(p->token_section.section);
+				if(p->token_section.userdata && api->freedata)
+					api->freedata(api, p->token_section.userdata);
+				
+				mustache_free(api, p->token_section.section);
 				if(p->token_section.name)
 					free(p->token_section.name);
 				break;

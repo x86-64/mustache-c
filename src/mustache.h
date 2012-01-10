@@ -56,6 +56,12 @@ typedef uintmax_t (*mustache_api_sectget)(mustache_api_t *api, void *userdata, m
  */
 typedef void      (*mustache_api_error)  (mustache_api_t *api, void *userdata, uintmax_t lineno, char *error); 
 
+/** Free userdata callback.
+ * @param  api         Current api set
+ * @param  userdata    Userdata saved in tokens
+ */
+typedef void      (*mustache_api_freedata)(mustache_api_t *api, void *userdata); 
+
 /** Token type enum */
 enum mustache_token_type_t {
 	TOKEN_TEXT,                             ///< Type text
@@ -66,12 +72,14 @@ enum mustache_token_type_t {
 struct mustache_token_variable_t {
 	char                  *text;            ///< Text or variable name
 	uintmax_t              text_length;     ///< Text length or variable name length
+	void                  *userdata;        ///< Userdata
 };
 
 struct mustache_token_section_t {
 	char                  *name;            ///< Section name
 	mustache_token_t      *section;         ///< Section template
 	uintmax_t              inverted;        ///< Inverted section or not
+	void                  *userdata;        ///< Userdata
 };
 
 struct mustache_token_t {
@@ -91,6 +99,7 @@ struct mustache_api_t {
 	mustache_api_varget   varget;           ///< Get variable callback
 	mustache_api_sectget  sectget;          ///< Get section callback 
 	mustache_api_error    error;            ///< Error callback
+	mustache_api_freedata freedata;         ///< Free userdata callback
 };
 
 // api
@@ -102,6 +111,15 @@ struct mustache_api_t {
  * @retval !NULL Successful call
  */
 mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata);
+
+/** Prerender template. You will receive ->varget and ->sectget callbacks only, precompute some info if needed and save to userdata field.
+ * @param  api         Current api set
+ * @param  userdata    Userdata passed to ->read function
+ * @param  template    Template to use for rendering
+ * @retval 0  Error occured
+ * @retval >0 Successful call
+ */
+uintmax_t             mustache_prerender(mustache_api_t *api, void *userdata, mustache_template_t *template);
 
 /** Render template
  * @param  api         Current api set
@@ -115,7 +133,7 @@ uintmax_t             mustache_render (mustache_api_t *api, void *userdata, must
 /** Free template
  * @param  template    Template to free
  */
-void                  mustache_free   (mustache_template_t *template);
+void                  mustache_free   (mustache_api_t *api, mustache_template_t *template);
 
 // helpers (build with --enable-helpers, default)
 

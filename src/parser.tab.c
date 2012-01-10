@@ -453,8 +453,8 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    43,    43,    46,    49,    52,    64,    71,    78,    86,
-      97,   100
+       0,    43,    43,    46,    49,    52,    64,    72,    80,    89,
+     101,   104
 };
 #endif
 
@@ -1446,6 +1446,7 @@ yyreduce:
 		(yyval.template)->type                     = TOKEN_TEXT;
 		(yyval.template)->token_simple.text        = (yyvsp[(1) - (1)].text);
 		(yyval.template)->token_simple.text_length = strlen((yyvsp[(1) - (1)].text));
+		(yyval.template)->token_simple.userdata    = NULL;
 		(yyval.template)->next                     = NULL;
 	}
     break;
@@ -1453,12 +1454,13 @@ yyreduce:
   case 7:
 
 /* Line 1806 of yacc.c  */
-#line 71 "parser.y"
+#line 72 "parser.y"
     {         // mustache tag
 		(yyval.template) = malloc(sizeof(mustache_token_t));
 		(yyval.template)->type                     = TOKEN_VARIABLE;
 		(yyval.template)->token_simple.text        = (yyvsp[(2) - (3)].text);
 		(yyval.template)->token_simple.text_length = strlen((yyvsp[(2) - (3)].text));
+		(yyval.template)->token_simple.userdata    = NULL;
 		(yyval.template)->next                     = NULL;
 	}
     break;
@@ -1466,13 +1468,14 @@ yyreduce:
   case 8:
 
 /* Line 1806 of yacc.c  */
-#line 78 "parser.y"
+#line 80 "parser.y"
     { // mustache section
 		(yyval.template) = malloc(sizeof(mustache_token_t));
 		(yyval.template)->type                   = TOKEN_SECTION;
 		(yyval.template)->token_section.name     = (yyvsp[(3) - (9)].text);
 		(yyval.template)->token_section.section  = (yyvsp[(5) - (9)].template);
 		(yyval.template)->token_section.inverted = 0;
+		(yyval.template)->token_section.userdata = NULL;
 		(yyval.template)->next                   = NULL;
 	}
     break;
@@ -1480,13 +1483,14 @@ yyreduce:
   case 9:
 
 /* Line 1806 of yacc.c  */
-#line 86 "parser.y"
+#line 89 "parser.y"
     { // mustache inverted section 
 		(yyval.template) = malloc(sizeof(mustache_token_t));
 		(yyval.template)->type                   = TOKEN_SECTION;
 		(yyval.template)->token_section.name     = (yyvsp[(3) - (9)].text);
 		(yyval.template)->token_section.section  = (yyvsp[(5) - (9)].template);
 		(yyval.template)->token_section.inverted = 1;
+		(yyval.template)->token_section.userdata = NULL;
 		(yyval.template)->next                   = NULL;
 	}
     break;
@@ -1494,7 +1498,7 @@ yyreduce:
   case 10:
 
 /* Line 1806 of yacc.c  */
-#line 97 "parser.y"
+#line 101 "parser.y"
     {
 		(yyval.text) = (yyvsp[(1) - (1)].text);
 	}
@@ -1503,7 +1507,7 @@ yyreduce:
   case 11:
 
 /* Line 1806 of yacc.c  */
-#line 100 "parser.y"
+#line 104 "parser.y"
     {    // eat up text duplicates
 		uintmax_t len1, len2;
 		
@@ -1520,7 +1524,7 @@ yyreduce:
 
 
 /* Line 1806 of yacc.c  */
-#line 1524 "parser.tab.c"
+#line 1528 "parser.tab.c"
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1751,7 +1755,7 @@ yyreturn:
 
 
 /* Line 2067 of yacc.c  */
-#line 112 "parser.y"
+#line 116 "parser.y"
 
 
 void yyerror(mustache_ctx *ctx, const char *msg){ // {{{
@@ -1795,7 +1799,7 @@ mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // 
 	while(1){
 		content       = realloc(content, content_off + 1024 + 2); // 2 for terminating EOF of yy
 		if(!content)
-			break;;
+			break;
 		
 		if( (ret = api->read(api, userdata, content + content_off, 1024)) == 0)
 			break;
@@ -1814,6 +1818,25 @@ mustache_template_t * mustache_compile(mustache_api_t *api, void *userdata){ // 
 		free(content);
 	}
 	return ctx.template;
+} // }}}
+uintmax_t             mustache_prerender (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
+	mustache_template_t            *p;
+	
+	for(p = template; p; p = p->next){
+		switch(p->type){
+			case TOKEN_TEXT:
+				break;
+			case TOKEN_VARIABLE:
+				if(api->varget(api, userdata, &p->token_simple) == 0)
+					return 0;
+				break;
+			case TOKEN_SECTION:
+				if(api->sectget(api, userdata, &p->token_section) == 0)
+					return 0;
+				break;
+		};
+	}
+	return 1;
 } // }}}
 uintmax_t             mustache_render (mustache_api_t *api, void *userdata, mustache_template_t *template){ // {{{
 	mustache_template_t            *p;
@@ -1836,18 +1859,24 @@ uintmax_t             mustache_render (mustache_api_t *api, void *userdata, must
 	}
 	return 1;
 } // }}}
-void                  mustache_free   (mustache_template_t *template){ // {{{
+void                  mustache_free   (mustache_api_t *api, mustache_template_t *template){ // {{{
 	mustache_template_t            *p, *n;
 	
 	for(p = template; p; p = n){
 		switch(p->type){
 			case TOKEN_TEXT:
 			case TOKEN_VARIABLE:
+				if(p->token_simple.userdata && api->freedata)
+					api->freedata(api, p->token_simple.userdata);
+				
 				if(p->token_simple.text)
 					free(p->token_simple.text);
 				break;
 			case TOKEN_SECTION:
-				mustache_free(p->token_section.section);
+				if(p->token_section.userdata && api->freedata)
+					api->freedata(api, p->token_section.userdata);
+				
+				mustache_free(api, p->token_section.section);
 				if(p->token_section.name)
 					free(p->token_section.name);
 				break;

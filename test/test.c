@@ -45,7 +45,7 @@ int tests_test1(void){
 	
 	template = mustache_compile(&api, &srcstr);
 	mustache_render(&api, &dststr, template);
-	mustache_free(template);
+	mustache_free(&api, template);
 	
 	if(strcmp(dststr.string, target_output) != 0)
 		return 1; // error
