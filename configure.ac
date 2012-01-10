@@ -12,6 +12,10 @@ AC_PROG_LIBTOOL
 AC_HEADER_STDC
 AC_FUNC_MALLOC
 
+AC_CHECK_LIB(frozen, frozen_init, [], [exit])
+modulesdir=${libexecdir}/frozen/
+AC_SUBST(modulesdir)
+
 AC_PATH_PROGS(BISON, [bison], no)
 AC_PATH_PROGS(FLEX, [flex], no)
 
@@ -27,6 +31,7 @@ fi
 
 AC_CONFIG_FILES([Makefile
 		src/Makefile
+		src/frozen/Makefile
 		test/Makefile
 ])
 AC_OUTPUT

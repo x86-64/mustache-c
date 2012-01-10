@@ -13,4 +13,4 @@ parser.tab.c: parser.lex.c
 parser.lex.c:
 	${FLEX}  -Pmustache_p_ --bison-bridge -o parser.lex.c parser.l
 
-
+SUBDIRS = . frozen
