@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
-<title>mustache-c: Globals</title>
+<title>mustache-c: module/mustache</title>
 
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <link href="doxygen.css" rel="stylesheet" type="text/css" />
@@ -40,50 +40,30 @@
       <li><a href="index.html"><span>Main&#160;Page</span></a></li>
       <li><a href="modules.html"><span>Modules</span></a></li>
       <li><a href="annotated.html"><span>Data&#160;Structures</span></a></li>
-      <li class="current"><a href="files.html"><span>Files</span></a></li>
+      <li><a href="files.html"><span>Files</span></a></li>
     </ul>
   </div>
-  <div id="navrow2" class="tabs2">
-    <ul class="tablist">
-      <li><a href="files.html"><span>File&#160;List</span></a></li>
-      <li class="current"><a href="globals.html"><span>Globals</span></a></li>
-    </ul>
-  </div>
-  <div id="navrow3" class="tabs2">
-    <ul class="tablist">
-      <li><a href="globals.html"><span>All</span></a></li>
-      <li class="current"><a href="globals_func.html"><span>Functions</span></a></li>
-      <li><a href="globals_type.html"><span>Typedefs</span></a></li>
-      <li><a href="globals_enum.html"><span>Enumerations</span></a></li>
-      <li><a href="globals_eval.html"><span>Enumerator</span></a></li>
-    </ul>
-  </div>
+</div>
+<div class="header">
+  <div class="headertitle">
+<div class="title">module/mustache</div>  </div>
 </div>
 <div class="contents">
-&#160;<ul>
-<li>mustache_compile()
-: <a class="el" href="mustache_8h.html#aad82a4b116458c253c5b54dbe85981e9">mustache.h</a>
-</li>
-<li>mustache_dump()
-: <a class="el" href="mustache_8h.html#aba0624c12b416433a31a359120a33d9d">mustache.h</a>
-</li>
-<li>mustache_free()
-: <a class="el" href="mustache_8h.html#a9f0b3c3fa54852ff86fade95738e59b4">mustache.h</a>
-</li>
-<li>mustache_prerender()
-: <a class="el" href="mustache_8h.html#a2674382f4212e30ec6eff35ba441322f">mustache.h</a>
-</li>
-<li>mustache_render()
-: <a class="el" href="mustache_8h.html#a0f87ef28077b4008d307530e3ad8e763">mustache.h</a>
-</li>
-<li>mustache_std_strread()
-: <a class="el" href="mustache_8h.html#a4e271e7329458ab846e1830a7871545e">mustache.h</a>
-</li>
-<li>mustache_std_strwrite()
-: <a class="el" href="mustache_8h.html#a1f0367e67a24712bc85a348549e03f00">mustache.h</a>
-</li>
-</ul>
-</div>
+
+
+<h3><a class="anchor" id="page_mustache_info"></a>Description</h3><div class="textblock"></div>
+
+<h3><a class="anchor" id="page_mustache_config"></a>Configuration</h3><div class="textblock"><p>Accepted configuration: </p>
+<div class="fragment"><pre class="fragment"> {
+              <span class="keyword">class                   </span>= &quot;modules/mustache&quot;,
+              template                =                                      # <span class="keyword">template</span> data
+                                        (file_t){ ... }                      #  - from file
+                                        (machine_t){ ... }                   #  - from machine
+                                        ...
+              },
+              output                  = (hashkey_t)<span class="stringliteral">&quot;buffer&quot;</span>                  # output result to, <span class="keywordflow">default</span> <span class="stringliteral">&quot;output&quot;</span>
+ }
+</pre></div> </div></div>
 
 
 <hr class="footer"/><address class="footer"><small>
