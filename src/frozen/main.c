@@ -2,24 +2,26 @@
 #include <mustache.h>
 
 /**
- * @ingroup backend
- * @addtogroup mod_backend_mustache module/mustache
+ * @ingroup machine
+ * @addtogroup mod_machine_mustache module/mustache
  */
 /**
- * @ingroup mod_backend_mustache
+ * @ingroup mod_machine_mustache
  * @page page_mustache_info Description
  *
  */
 /**
- * @ingroup mod_backend_mustache
+ * @ingroup mod_machine_mustache
  * @page page_mustache_config Configuration
  *  
  * Accepted configuration:
  * @code
  * {
  *              class                   = "modules/mustache",
- *              template                = (backend_t){                         # template to use
- *                  { <some backend with template info> }
+ *              template                =                                      # template data
+ *                                        (file_t){ ... }                      #  - from file
+ *                                        (machine_t){ ... }                   #  - from machine
+ *                                        ...
  *              },
  *              output                  = (hashkey_t)"buffer"                  # output result to, default "output"
  * }
@@ -37,7 +39,7 @@ typedef struct mustache_userdata {
 } mustache_userdata;
 
 typedef struct mustache_ctx {
-	backend_t             *backend;
+	machine_t             *machine;
 	request_t             *request;
 	mustache_userdata     *userdata;
 	data_t                *output;
@@ -115,17 +117,17 @@ mustache_api_t mustache_api = {
 	.freedata = (mustache_api_freedata)&mustache_frozen_freedata
 };
 
-static int mustache_init(backend_t *backend){ // {{{
+static int mustache_init(machine_t *machine){ // {{{
 	mustache_userdata         *userdata;
 
-	if((userdata = backend->userdata = calloc(1, sizeof(mustache_userdata))) == NULL)
+	if((userdata = machine->userdata = calloc(1, sizeof(mustache_userdata))) == NULL)
 		return error("calloc failed");
 	
 	userdata->output = HK(output);
 	return 0;
 } // }}}
-static int mustache_destroy(backend_t *backend){ // {{{
-	mustache_userdata     *userdata          = (mustache_userdata *)backend->userdata;
+static int mustache_destroy(machine_t *machine){ // {{{
+	mustache_userdata     *userdata          = (mustache_userdata *)machine->userdata;
 	
 	if(userdata->template)
 		mustache_free(&mustache_api, userdata->template);
@@ -133,12 +135,12 @@ static int mustache_destroy(backend_t *backend){ // {{{
 	free(userdata);
 	return 0;
 } // }}}
-static int mustache_configure(backend_t *backend, config_t *config){ // {{{
+static int mustache_configure(machine_t *machine, config_t *config){ // {{{
 	ssize_t                ret;
 	data_t                *tpl_data;
-	mustache_userdata     *userdata          = (mustache_userdata *)backend->userdata;
+	mustache_userdata     *userdata          = (mustache_userdata *)machine->userdata;
 	
-	hash_data_copy(ret, TYPE_HASHKEYT, userdata->output, config, HK(output));
+	hash_data_get(ret, TYPE_HASHKEYT, userdata->output, config, HK(output));
 	
 	if( (tpl_data = hash_data_find(config, HK(template))) == NULL)
 		return -EINVAL;
@@ -159,30 +161,30 @@ static int mustache_configure(backend_t *backend, config_t *config){ // {{{
 	return 0;
 } // }}}
 
-static ssize_t mustache_handler(backend_t *backend, request_t *request){ // {{{
+static ssize_t mustache_handler(machine_t *machine, request_t *request){ // {{{
 	ssize_t                ret;
 	data_t                *output;
-	mustache_userdata     *userdata = (mustache_userdata *)backend->userdata;
+	mustache_userdata     *userdata = (mustache_userdata *)machine->userdata;
 	
 	if( (output = hash_data_find(request, userdata->output)) == NULL)
 		return error("buffer not supplied");
 	
 	data_t                 dslide   = DATA_SLIDERT(output, 0);
-	mustache_ctx           ctx      = { backend, request, userdata, &dslide };
+	mustache_ctx           ctx      = { machine, request, userdata, &dslide };
 	
 	if(mustache_render(&mustache_api, &ctx, userdata->template) == 0)
 		return -EFAULT;
 	
-	return ((ret = backend_pass(backend, request)) < 0) ? ret : -EEXIST;
+	return ((ret = machine_pass(machine, request)) < 0) ? ret : -EEXIST;
 } // }}}
 
-static backend_t c_mustache_proto = {
+static machine_t c_mustache_proto = {
 	.class          = "modules/mustache",
 	.supported_api  = API_HASH,
 	.func_init      = &mustache_init,
 	.func_configure = &mustache_configure,
 	.func_destroy   = &mustache_destroy,
-	.backend_type_hash = {
+	.machine_type_hash = {
 		.func_handler = &mustache_handler
 	}
 };
