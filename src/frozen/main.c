@@ -162,7 +162,6 @@ static int mustache_configure(machine_t *machine, config_t *config){ // {{{
 } // }}}
 
 static ssize_t mustache_handler(machine_t *machine, request_t *request){ // {{{
-	ssize_t                ret;
 	data_t                *output;
 	mustache_userdata     *userdata = (mustache_userdata *)machine->userdata;
 	
@@ -173,9 +172,9 @@ static ssize_t mustache_handler(machine_t *machine, request_t *request){ // {{{
 	mustache_ctx           ctx      = { machine, request, userdata, &dslide };
 	
 	if(mustache_render(&mustache_api, &ctx, userdata->template) == 0)
-		return -EFAULT;
+		return error("mustache_render failed");
 	
-	return ((ret = machine_pass(machine, request)) < 0) ? ret : -EEXIST;
+	return machine_pass(machine, request);
 } // }}}
 
 static machine_t c_mustache_proto = {
