@@ -616,9 +616,6 @@ am__EXEEXT_TRUE
 LTLIBOBJS
 FLEX
 BISON
-modulesdir
-HAVE_FROZEN_FALSE
-HAVE_FROZEN_TRUE
 LIBOBJS
 CPP
 OTOOL64
@@ -11391,59 +11388,6 @@ fi
 
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for frozen_init in -lfrozen" >&5
-$as_echo_n "checking for frozen_init in -lfrozen... " >&6; }
-if ${ac_cv_lib_frozen_frozen_init+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lfrozen  $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char frozen_init ();
-int
-main ()
-{
-return frozen_init ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_c_try_link "$LINENO"; then :
-  ac_cv_lib_frozen_frozen_init=yes
-else
-  ac_cv_lib_frozen_frozen_init=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_frozen_frozen_init" >&5
-$as_echo "$ac_cv_lib_frozen_frozen_init" >&6; }
-if test "x$ac_cv_lib_frozen_frozen_init" = xyes; then :
-  FROZEN=1
-else
-  FROZEN=0
-fi
-
- if test "$FROZEN" = 1; then
-  HAVE_FROZEN_TRUE=
-  HAVE_FROZEN_FALSE='#'
-else
-  HAVE_FROZEN_TRUE='#'
-  HAVE_FROZEN_FALSE=
-fi
-
-modulesdir=${libexecdir}/frozen/
-
-
 for ac_prog in bison
 do
   # Extract the first word of "$ac_prog", so it can be a program name with args.
@@ -11559,7 +11503,7 @@ $as_echo "#define HELPERS 1" >>confdefs.h
 
 fi
 
-ac_config_files="$ac_config_files Makefile src/Makefile src/frozen/Makefile test/Makefile"
+ac_config_files="$ac_config_files Makefile src/Makefile test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -11684,10 +11628,6 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${am__fastdepCC_TRUE}" && test -z "${am__fastdepCC_FALSE}"; then
   as_fn_error $? "conditional \"am__fastdepCC\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
-if test -z "${HAVE_FROZEN_TRUE}" && test -z "${HAVE_FROZEN_FALSE}"; then
-  as_fn_error $? "conditional \"HAVE_FROZEN\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 
@@ -12576,7 +12516,6 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "src/Makefile") CONFIG_FILES="$CONFIG_FILES src/Makefile" ;;
-    "src/frozen/Makefile") CONFIG_FILES="$CONFIG_FILES src/frozen/Makefile" ;;
     "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
