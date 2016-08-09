@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Description: Mustache implementation in pure C
+URL: https://github.com/x86-64/mustache-c
+Version: @VERSION@
+Libs: -lmustache_c -L${libdir}
+Cflags: -I${includedir}
