@@ -1,6 +1,7 @@
 AC_PREREQ(2.61)
-AC_INIT([mustashe_c], [1.0.0], [x86mail@gmail.com])
+AC_INIT([mustache_c], [1.0.0], [x86mail@gmail.com])
 
+AC_CONFIG_FILES([mustache_c-1.0.pc])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_AUX_DIR([build])
@@ -11,6 +12,9 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_HEADER_STDC
 AC_FUNC_MALLOC
+
+PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
 
 AC_PATH_PROGS(BISON, [bison], no)
 AC_PATH_PROGS(FLEX, [flex], no)
