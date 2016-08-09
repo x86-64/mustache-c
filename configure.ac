@@ -19,6 +19,10 @@ PKG_INSTALLDIR
 AC_PATH_PROGS(BISON, [bison], no)
 AC_PATH_PROGS(FLEX, [flex], no)
 
+AC_CHECK_HEADER([stdint.h], [],
+[AC_MSG_ERROR([Couldn't find or include stdint.h])],
+[])
+
 AC_ARG_ENABLE(debug,  AS_HELP_STRING([--enable-debug],  [compile with debug functions]))
 if test "x$enable_debug" == "xyes"; then
         AC_DEFINE([DEBUG], [1], [Defined if debug functions requested])

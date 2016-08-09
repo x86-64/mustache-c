@@ -1,6 +1,8 @@
 #ifndef MUSTACHE_H
 #define MUSTACHE_H
 
+#include <stdint.h>
+
 /** @file mustache.h */
 
 typedef struct mustache_api_t             mustache_api_t;                ///< Api typedef
