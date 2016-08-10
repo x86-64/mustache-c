@@ -14,7 +14,7 @@
 %x comment
 %x mustag
 
-name        [a-z0-9][a-z0-9_:]*
+name        [a-z0-9][a-z0-9_:-]*
 special     [#^/]
 
 %%
