@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "config.h"
 #include "mustache.h"
+#include "mustache-internal.h"
 #include "parser.tab.h"
 %}
 
@@ -14,7 +15,7 @@
 %x comment
 %x mustag
 
-name        [a-z0-9][a-z0-9_:]*
+name        [a-z0-9][a-z0-9_:-]*
 special     [#^/]
 
 %%

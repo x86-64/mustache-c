@@ -1,7 +1,7 @@
 GENSOURCE = parser.tab.h parser.tab.c parser.lex.c
 
 lib_LTLIBRARIES=libmustache_c.la
-libmustache_c_la_SOURCES= $(GENSOURCE)
+libmustache_c_la_SOURCES= $(GENSOURCE) mustache-internal.h
 libmustache_c_la_LDFLAGS= -module -avoid-version -shared
 EXTRA_DIST = parser.l parser.y                 
 CLEANFILES = $(GENSOURCE)
