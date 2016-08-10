@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include "config.h"
 #include "mustache.h"
+#include "mustache-internal.h"
 #include "parser.tab.h"
 %}
 

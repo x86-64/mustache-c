@@ -5,6 +5,7 @@
 #include <string.h>
 #include <config.h>
 #include <mustache.h>
+#include <mustache-internal.h>
 #include <parser.tab.h>	
 
 #define YY_END_OF_BUFFER_CHAR 0
@@ -13,12 +14,6 @@ typedef size_t yy_size_t;
 extern YY_BUFFER_STATE mustache_p__scan_buffer (char *base,yy_size_t size  );
 extern int mustache_p_lex_destroy(void);
 extern int mustache_p_get_lineno(void);
-
-typedef struct mustache_ctx {
-	mustache_api_t        *api;
-	mustache_template_t   *template;
-	void                  *userdata;
-} mustache_ctx;
 
 void yyerror (mustache_ctx *, const char *);
 
