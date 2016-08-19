@@ -23,7 +23,8 @@ mustache_read_file(mustache_api_t *api, void *data, char *buf, uintmax_t sz)
 }
 
 static uintmax_t
-mustache_write_stdout(mustache_api_t *api, void *data, char *buf, uintmax_t sz)
+mustache_write_stdout(mustache_api_t *api, void *data,
+                      char const *buf, uintmax_t sz)
 {
     /* Do whatever it takes to write sz number of bytes from buf to somewhere.
      */
@@ -31,7 +32,8 @@ mustache_write_stdout(mustache_api_t *api, void *data, char *buf, uintmax_t sz)
 }
 
 static void
-mustache_error(mustache_api_t *api, void *data, uintmax_t line, char *error)
+mustache_error(mustache_api_t *api, void *data,
+               uintmax_t line, char const *error)
 {
     fprintf(stderr, "error in template: %" PRIu64  ": %s\n", line, error);
 }
@@ -53,7 +55,7 @@ mustache_varget(mustache_api_t *api, void *data, mustache_token_variable_t *t)
     static const char *name = "Angus McFife";
 
     if (strcmp(t->text, "name") == 0) {
-        api->write(api, data, (char*)name, strlen(name));
+        api->write(api, data, name, strlen(name));
         return true;
     }
 
