@@ -129,7 +129,7 @@ uintmax_t             mustache_std_strread(mustache_api_t *api, void *userdata, 
 	ctx->offset += string_len;
 	return string_len;
 } // }}}
-uintmax_t             mustache_std_strwrite(mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size){ // {{{
+uintmax_t             mustache_std_strwrite(mustache_api_t *api, void *userdata, char const *buffer, uintmax_t buffer_size){ // {{{
 	mustache_str_ctx      *ctx               = (mustache_str_ctx *)userdata; 
 	
 	ctx->string = realloc(ctx->string, ctx->offset + buffer_size + 1);

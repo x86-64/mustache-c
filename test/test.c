@@ -23,7 +23,7 @@ uintmax_t  tests_sectget(mustache_api_t *api, void *userdata, mustache_token_sec
 	}
 	return 0; // error
 }
-void       tests_error(mustache_api_t *api, void *userdata, uintmax_t lineno, char *error){
+void       tests_error(mustache_api_t *api, void *userdata, uintmax_t lineno, char const *error){
 	fprintf(stderr, "error: %d: %s\n", (int)lineno, error);
 	error_flag = 1;
 }

@@ -30,7 +30,7 @@ typedef uintmax_t (*mustache_api_read)   (mustache_api_t *api, void *userdata, c
  * @retval 0      Error occured
  * @retval >0     Successful call
  */
-typedef uintmax_t (*mustache_api_write)  (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size);
+typedef uintmax_t (*mustache_api_write)  (mustache_api_t *api, void *userdata, char const *buffer, uintmax_t buffer_size);
 
 /** Get variable callback. User call ->write api to dump variable value to output, or do nothing.
  * @param  api         Current api set
@@ -56,7 +56,7 @@ typedef uintmax_t (*mustache_api_sectget)(mustache_api_t *api, void *userdata, m
  * @param  lineno      Line number on which error occured
  * @param  error       Error description
  */
-typedef void      (*mustache_api_error)  (mustache_api_t *api, void *userdata, uintmax_t lineno, char *error); 
+typedef void      (*mustache_api_error)  (mustache_api_t *api, void *userdata, uintmax_t lineno, char const *error); 
 
 /** Free userdata callback.
  * @param  api         Current api set
