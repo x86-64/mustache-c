@@ -33,6 +33,10 @@ if test "x$enable_helpers" != "xyes"; then
         AC_DEFINE([HELPERS], [1], [Define if helpers routines enabled])
 fi
 
+AS_IF([test x"$BISON" == xno || test x"$FLEX" == xno], [
+  AC_MSG_ERROR([bison and flex need to be installed to build mustache-c])
+], [])
+
 AC_CONFIG_FILES([Makefile
         src/Makefile
         test/Makefile
