@@ -147,7 +147,7 @@ typedef struct mustache_str_ctx {
 } mustache_str_ctx;
 
 uintmax_t             mustache_std_strread  (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size); ///< Helper api function to read from plain C string
-uintmax_t             mustache_std_strwrite (mustache_api_t *api, void *userdata, char *buffer, uintmax_t buffer_size); ///< Helper api function to write to plain C string
+uintmax_t             mustache_std_strwrite (mustache_api_t *api, void *userdata, char const *buffer, uintmax_t buffer_size); ///< Helper api function to write to plain C string
 
 // debug api (build with --enable-debug, not default)
 void                  mustache_dump   (mustache_template_t *template); ///< Debug dump template
