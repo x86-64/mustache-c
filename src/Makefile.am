@@ -8,8 +8,8 @@ CLEANFILES = $(GENSOURCE)
 
 include_HEADERS=mustache.h
 
-parser.tab.c: parser.lex.c
+parser.tab.c: parser.lex.c parser.y
 	${BISON} -p mustache_p_ -d -b parser parser.y
-parser.lex.c:
+parser.lex.c: parser.l
 	${FLEX}  -Pmustache_p_ --bison-bridge -o parser.lex.c parser.l
 
