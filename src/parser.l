@@ -27,10 +27,12 @@ special     [#^/]
 <mustag>{special}     { return *yytext; }
 <mustag>{name}        { yylval->text = strdup(yytext); return TEXT; }
 <mustag>"}}"          {	BEGIN(INITIAL); return MUSTAG_END;  }
+<mustag>"}}}"          {	BEGIN(INITIAL); return MUSTAG_NOESC_END;  }
 
 "//"+[^\n]*           {                 }
 "/*"                  { BEGIN(comment); }
 "{{"                  { BEGIN(mustag); return MUSTAG_START; }
+"{{{"                 { BEGIN(mustag); return MUSTAG_NOESC_START; }
 
 "{" |
 [^{]*                 { yylval->text = strdup(yytext); return TEXT;  }
