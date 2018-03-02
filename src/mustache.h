@@ -74,6 +74,7 @@ enum mustache_token_type_t {
 struct mustache_token_variable_t {
 	char                  *text;            ///< Text or variable name
 	uintmax_t              text_length;     ///< Text length or variable name length
+	int                    escaped;         ///< Whether token should be escaped
 	void                  *userdata;        ///< Userdata
 };
 

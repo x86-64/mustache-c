@@ -30,6 +30,10 @@ void yyerror (mustache_ctx *, const char *);
 }
 %token TEXT MUSTAG_START MUSTAG_END
 %type  <text>                  TEXT MUSTAG_START MUSTAG_END text
+
+%token MUSTAG_NOESC_START "{{{"
+%token MUSTAG_NOESC_END "}}}"
+
 %type  <template>              tpl_tokens
 %type  <template>              tpl_token
 
@@ -61,6 +65,16 @@ tpl_token :
 		$$->type                     = TOKEN_TEXT;
 		$$->token_simple.text        = $1;
 		$$->token_simple.text_length = strlen($1);
+		$$->token_simple.escaped     = 1;
+		$$->token_simple.userdata    = NULL;
+		$$->next                     = NULL;
+	}
+	| MUSTAG_NOESC_START text MUSTAG_NOESC_END {         // mustache escaped tag
+		$$ = malloc(sizeof(mustache_token_t));
+		$$->type                     = TOKEN_VARIABLE;
+		$$->token_simple.text        = $2;
+		$$->token_simple.text_length = strlen($2);
+		$$->token_simple.escaped     = 0;
 		$$->token_simple.userdata    = NULL;
 		$$->next                     = NULL;
 	}
@@ -69,6 +83,7 @@ tpl_token :
 		$$->type                     = TOKEN_VARIABLE;
 		$$->token_simple.text        = $2;
 		$$->token_simple.text_length = strlen($2);
+		$$->token_simple.escaped     = 0;
 		$$->token_simple.userdata    = NULL;
 		$$->next                     = NULL;
 	}
