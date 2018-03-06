@@ -95,6 +95,10 @@ tpl_token :
 		$$->token_section.inverted = 0;
 		$$->token_section.userdata = NULL;
 		$$->next                   = NULL;
+
+		// We don't need the closing tag name and it was strdup'd earlier,
+		// free it now.
+		free($8);
 	}
 	| MUSTAG_START '^' text MUSTAG_END tpl_tokens MUSTAG_START '/' text MUSTAG_END { // mustache inverted section 
 		$$ = malloc(sizeof(mustache_token_t));
@@ -104,6 +108,10 @@ tpl_token :
 		$$->token_section.inverted = 1;
 		$$->token_section.userdata = NULL;
 		$$->next                   = NULL;
+
+		// We don't need the closing tag name and it was strdup'd earlier,
+		// free it now.
+		free($8);
 	}
 	;
 
