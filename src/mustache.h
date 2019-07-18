@@ -8,7 +8,6 @@
 typedef struct mustache_api_t             mustache_api_t;                ///< Api typedef
 typedef struct mustache_token_t           mustache_token_t;              ///< Token typedef
 typedef struct mustache_token_t           mustache_template_t;           ///< Template typedef
-typedef enum   mustache_token_type_t      mustache_token_type_t;         ///< Token type typedef
 typedef struct mustache_token_variable_t  mustache_token_variable_t;     ///< Token variable typedef
 typedef struct mustache_token_section_t   mustache_token_section_t;      ///< Token section typedef
 
@@ -39,7 +38,7 @@ typedef uintmax_t (*mustache_api_write)  (mustache_api_t *api, void *userdata, c
  * @retval 0      Error occured
  * @retval >0     Successful call
  */
-typedef uintmax_t (*mustache_api_varget) (mustache_api_t *api, void *userdata, mustache_token_variable_t *token); 
+typedef uintmax_t (*mustache_api_varget) (mustache_api_t *api, void *userdata, mustache_token_variable_t *token);
 
 /** Get section callback. User call iterativly render routines on section, or do nothing.
  * @param  api         Current api set
@@ -48,7 +47,7 @@ typedef uintmax_t (*mustache_api_varget) (mustache_api_t *api, void *userdata, m
  * @retval 0      Error occured
  * @retval >0     Successful call
  */
-typedef uintmax_t (*mustache_api_sectget)(mustache_api_t *api, void *userdata, mustache_token_section_t  *token); 
+typedef uintmax_t (*mustache_api_sectget)(mustache_api_t *api, void *userdata, mustache_token_section_t  *token);
 
 /** Errors callback. Used only on compilation stage.
  * @param  api         Current api set
@@ -56,20 +55,20 @@ typedef uintmax_t (*mustache_api_sectget)(mustache_api_t *api, void *userdata, m
  * @param  lineno      Line number on which error occured
  * @param  error       Error description
  */
-typedef void      (*mustache_api_error)  (mustache_api_t *api, void *userdata, uintmax_t lineno, char const *error); 
+typedef void      (*mustache_api_error)  (mustache_api_t *api, void *userdata, uintmax_t lineno, char const *error);
 
 /** Free userdata callback.
  * @param  api         Current api set
  * @param  userdata    Userdata saved in tokens
  */
-typedef void      (*mustache_api_freedata)(mustache_api_t *api, void *userdata); 
+typedef void      (*mustache_api_freedata)(mustache_api_t *api, void *userdata);
 
 /** Token type enum */
-enum mustache_token_type_t {
+typedef enum mustache_token_type_t {
 	TOKEN_TEXT,                             ///< Type text
 	TOKEN_VARIABLE,                         ///< Type variable
 	TOKEN_SECTION                           ///< Type section
-};
+} mustache_token_type_t;
 
 struct mustache_token_variable_t {
 	char                  *text;            ///< Text or variable name
@@ -87,12 +86,12 @@ struct mustache_token_section_t {
 
 struct mustache_token_t {
 	mustache_token_type_t  type;            ///< Token type
-	
+
 	union {
 		mustache_token_variable_t     token_simple;
 		mustache_token_section_t      token_section;
 	};
-	
+
 	mustache_token_t      *next;            ///< Next token in chain
 };
 
@@ -100,7 +99,7 @@ struct mustache_api_t {
 	mustache_api_read     read;             ///< Read callback
 	mustache_api_write    write;            ///< Write callback
 	mustache_api_varget   varget;           ///< Get variable callback
-	mustache_api_sectget  sectget;          ///< Get section callback 
+	mustache_api_sectget  sectget;          ///< Get section callback
 	mustache_api_error    error;            ///< Error callback
 	mustache_api_freedata freedata;         ///< Free userdata callback
 };
@@ -143,7 +142,7 @@ void                  mustache_free   (mustache_api_t *api, mustache_template_t 
 /** Helper context */
 typedef struct mustache_str_ctx {
 	char                  *string;       ///< String to read or write
-	
+
 	uintmax_t              offset;       ///< Internal data. Current string offset.
 } mustache_str_ctx;
 
