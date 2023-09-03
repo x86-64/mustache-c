@@ -7,4 +7,14 @@ typedef struct mustache_ctx {
 	void                  *userdata;
 } mustache_ctx;
 
+void *internal_mustache_malloc(size_t size);
+
+void *internal_mustache_realloc(void *dst, size_t size);
+
+void *internal_mustache_calloc(size_t num, size_t size);
+
+void *internal_mustache_free(void *dst);
+
+char *mustache_strdup(const char *src);
+
 #endif

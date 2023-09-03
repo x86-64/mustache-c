@@ -152,4 +152,13 @@ uintmax_t             mustache_std_strwrite (mustache_api_t *api, void *userdata
 // debug api (build with --enable-debug, not default)
 void                  mustache_dump   (mustache_template_t *template); ///< Debug dump template
 
+typedef void *(*mustache_memory_malloc_f)(size_t size);
+typedef void *(*mustache_memory_realloc_f)(void *dst, size_t size);
+typedef void *(*mustache_memory_calloc_f)(size_t num, size_t size);
+typedef void (*mustache_memory_free_f)(void *dst);
+
+void
+mustache_memory_setup(mustache_memory_malloc_f new_malloc, mustache_memory_realloc_f new_realloc,
+                    mustache_memory_calloc_f new_calloc, mustache_memory_free_f new_free);
+
 #endif
