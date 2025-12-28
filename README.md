@@ -20,8 +20,18 @@ Not supported:
 
 Simply use the ```configure``` script to compile and install mustache-c:
 
+On GNU/Linux distributions:
+
 ```shell
 $ ./configure --prefix=/usr
+$ make
+$ sudo make install
+```
+
+On FreeBSD:
+
+```shell
+$ ./configure --prefix=/usr/local
 $ make
 $ sudo make install
 ```
